@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trạm Dừng Tâm Trí - Lofi Psychological Quiz</title>
+    
+    <!-- Tailwind CSS cho layout nhanh -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Quicksand cho tiêu đề (mềm mại, bo tròn), Inter cho nội dung (dễ đọc) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b1120; /* Xanh đen sâu thẳm */
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --primary-soft: #818cf8; /* Tím xanh pastel */
+            --secondary-soft: #a78bfa; /* Tím lavender */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .font-title {
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        /* --- Ambient Background --- */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+            background: radial-gradient(circle at center, #111827 0%, #0b1120 100%);
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(90px);
+            opacity: 0.4;
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+
+        .blob-1 {
+            top: -10%; left: -10%;
+            width: 50vw; height: 50vw;
+            background: var(--primary-soft);
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            bottom: -20%; right: -10%;
+            width: 60vw; height: 60vw;
+            background: var(--secondary-soft);
+            animation-delay: -5s;
+        }
+        
+        .blob-3 {
+            top: 40%; left: 30%;
+            width: 40vw; height: 40vw;
+            background: #3b82f6; /* Xanh dương êm dịu */
+            opacity: 0.2;
+            animation-delay: -10s;
+            animation-duration: 25s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 10%) scale(1.1); }
+            100% { transform: translate(-5%, 5%) scale(0.95); }
+        }
+
+        /* --- Glassmorphism Soft Panel --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(129, 140, 248, 0.05);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- Buttons --- */
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            border-radius: 1.25rem;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(167, 139, 250, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(167, 139, 250, 0.15);
+        }
+
+        /* Nút bắt đầu đặc biệt */
+        .start-btn {
+            background: linear-gradient(135deg, rgba(129, 140, 248, 0.2), rgba(167, 139, 250, 0.2));
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            border-radius: 9999px; /* Tròn xoe */
+            transition: all 0.5s ease;
+        }
+        .start-btn:hover {
+            background: linear-gradient(135deg, rgba(129, 140, 248, 0.3), rgba(167, 139, 250, 0.3));
+            box-shadow: 0 0 30px rgba(167, 139, 250, 0.2);
+            transform: scale(1.02);
+        }
+
+        /* --- Animations (Flowing water style) --- */
+        .fade-enter {
+            animation: fadeEnter 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        .fade-exit {
+            animation: fadeExit 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeEnter {
+            0% { opacity: 0; transform: translateY(20px); filter: blur(8px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        @keyframes fadeExit {
+            0% { opacity: 1; transform: translateY(0); filter: blur(0); }
+            100% { opacity: 0; transform: translateY(-15px); filter: blur(12px); }
+        }
+
+        /* Orb pulsing for loading */
+        .pulse-orb {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--secondary-soft) 0%, transparent 70%);
+            animation: pulseOrb 3s ease-in-out infinite alternate;
+            margin: 0 auto;
+        }
+        @keyframes pulseOrb {
+            0% { transform: scale(0.8); opacity: 0.3; }
+            100% { transform: scale(1.5); opacity: 0.8; }
+        }
+
+        /* Scrollbar mềm mại */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 10px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Lofi Background -->
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app" class="w-full max-w-3xl px-4 py-12 z-20 min-h-screen flex items-center justify-center">
+        <!-- Nội dung sẽ được render qua JS -->
+    </div>
+
+    <script>
+        // ---------------------------------------------------------
+        // 1. DATA: 30 CÂU HỎI TÂM LÝ
+        // ---------------------------------------------------------
+        const quizData = [
+            {
+                question: "Trong một bữa tiệc đông người mà bạn buộc phải tham gia, lớp vỏ bọc bạn thường khoác lên là gì?",
+                choices: [
+                    { text: "Tĩnh lặng, ngồi ở một góc quan sát nét mặt và hành vi của mọi người để cảm nhận luồng không khí xung quanh.", type: "TypeA" },
+                    { text: "Cười nói xã giao, dễ dàng hòa nhập nhưng trong đầu thầm đếm ngược thời gian để được trở về nhà.", type: "TypeB" },
+                    { text: "Tỏ ra bất cần hoặc giữ thái độ lạnh nhạt để không ai đến quá gần, tránh những câu chuyện xã giao mệt mỏi.", type: "TypeC" },
+                    { text: "Cố gắng tỏ ra ổn, chăm sóc hoặc lắng nghe người khác để đánh lạc hướng sự chú ý khỏi chính nỗi niềm của mình.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Khi bị một người mình vô cùng tin tưởng làm tổn thương, phản ứng đầu tiên trong sâu thẳm tâm trí bạn là:",
+                choices: [
+                    { text: "Lặng lẽ rút lui, phân tích từng chi tiết để hiểu tại sao mọi chuyện lại diễn ra như vậy.", type: "TypeA" },
+                    { text: "Cảm thấy trống rỗng, muốn đi đến một nơi thật xa để cắt đứt mọi liên lạc, để thời gian xoa dịu.", type: "TypeB" },
+                    { text: "Đóng sập mọi cánh cửa cảm xúc, tự nhủ rằng bản thân có thể tự bước đi mà không cần bất kỳ ai.", type: "TypeC" },
+                    { text: "Cố nén nỗi đau vào trong, giả vờ như mọi thứ vẫn ổn để tiếp tục cuộc sống, nhưng đêm về lại trằn trọc khôn nguôi.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Định nghĩa về 'sự tự do' tĩnh lặng đối với bạn là:",
+                choices: [
+                    { text: "Sự minh mẫn tuyệt đối trong tâm trí, không bị xáo trộn bởi những cảm xúc ngột ngạt từ bên ngoài.", type: "TypeA" },
+                    { text: "Không bị ràng buộc bởi kỳ vọng, được đi bất cứ đâu và chỉ đơn giản là hít thở bầu không khí mới.", type: "TypeB" },
+                    { text: "Được quyền bộc lộ những góc tối tăm, vỡ vụn nhất của mình mà không sợ một ánh mắt phán xét nào.", type: "TypeC" },
+                    { text: "Sự tự chủ hoàn toàn, bình yên sống ngày qua ngày mà không phải dựa dẫm hay làm gánh nặng cho ai.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Cách bạn vỗ về bản thân khi một ký ức buồn bất chợt ùa về giữa đêm:",
+                choices: [
+                    { text: "Nhìn nhận nó như một thước phim tư liệu cũ, giữ một khoảng cách an toàn với chính cảm xúc của mình.", type: "TypeA" },
+                    { text: "Pha một tách trà ấm, mở một bản nhạc lofi quen thuộc và để tâm trí thả trôi theo sự vô định.", type: "TypeB" },
+                    { text: "Để nước mắt rơi trong im lặng, để nỗi đau len lỏi nhưng kiên quyết không phát ra tiếng động nào.", type: "TypeC" },
+                    { text: "Hít một hơi thật sâu, nhẹ nhàng cất nó vào ngăn kéo ký ức và nhắm mắt ép mình ngủ để lo cho ngày mai.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Điều gì khiến bạn e ngại nhất khi ai đó muốn bước vào thế giới nội tâm của bạn?",
+                choices: [
+                    { text: "Sợ sự tĩnh lặng và ngăn nắp trong tâm trí mình bị đảo lộn bởi mớ bòng bong cảm xúc.", type: "TypeA" },
+                    { text: "Sợ một ngày ngọn lửa nhiệt huyết tắt ngấm, rồi cả hai lại trở thành những thói quen tẻ nhạt của nhau.", type: "TypeB" },
+                    { text: "Sợ người đó chạm vào những mảnh vỡ bên trong mình, e ngại rồi họ cũng sẽ mệt mỏi mà quay lưng.", type: "TypeC" },
+                    { text: "Sợ bản thân lại vô thức trở thành người hy sinh, gom hết gánh nặng vào mình rồi cuối cùng kiệt sức.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Bạn thường lặng lẽ nhìn nhận thế giới xung quanh như thế nào?",
+                choices: [
+                    { text: "Một bức tranh phức tạp, nơi mỗi người đều mang một câu chuyện giấu kín đằng sau nụ cười.", type: "TypeA" },
+                    { text: "Một sân ga rộng lớn sương mù, người đến người đi, hiếm có ai thực sự ở lại mãi mãi.", type: "TypeB" },
+                    { text: "Một nơi mà sự chân thành quá hiếm hoi, phải cẩn trọng lật từng lớp vỏ bọc mới mong tìm thấy chút ấm áp.", type: "TypeC" },
+                    { text: "Một guồng quay hối hả, nơi mình phải tự nhắc nhở bản thân luôn vững vàng để không bị bỏ lại phía sau.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Không gian nào vỗ về bạn tốt nhất khi tâm lý rơi vào khoảng không chông chênh?",
+                choices: [
+                    { text: "Một không gian riêng tư tuyệt đối, nơi chỉ có ánh đèn vàng nhạt và dòng suy nghĩ của riêng mình.", type: "TypeA" },
+                    { text: "Một chuyến xe lướt đi vô định trong đêm, hoặc ngồi thẫn thờ trước một bãi biển vắng lặng.", type: "TypeB" },
+                    { text: "Trùm kín chăn trong căn phòng tắt hết đèn, cuộn tròn lại như một đứa trẻ chờ cơn mưa tạnh.", type: "TypeC" },
+                    { text: "Bàn làm việc, vùi đầu vào một trang sách hay công việc dở dang để tâm trí tạm quên đi thực tại.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Giọng nói bên trong (inner voice) thường thì thầm điều gì mỗi khi bạn vấp ngã?",
+                choices: [
+                    { text: "'Hãy bình tĩnh xâu chuỗi lại mọi thứ. Mình sẽ rút ra được bài học gì để ngày mai tốt hơn?'", type: "TypeA" },
+                    { text: "'Có lẽ mình cần một khoảng lặng dài... hay là buông bỏ một chút để tìm lại chính mình?'", type: "TypeB" },
+                    { text: "'Đã bảo rồi mà, hy vọng càng nhiều thì thất vọng càng sâu. Từ nay đừng bận lòng nữa.'", type: "TypeC" },
+                    { text: "'Đứng dậy thôi. Mình không được phép yếu đuối lúc này, vẫn còn nhiều thứ phải gánh vác.'", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Khi thấy một người lạ rơi nước mắt trên phố, phản ứng trong lòng bạn là:",
+                choices: [
+                    { text: "Lặng lẽ quan sát và tự hỏi câu chuyện buồn nào đã mang họ đến tận cùng của sự kìm nén.", type: "TypeA" },
+                    { text: "Cảm thấy một luồng sóng u buồn lây lan, khẽ bước nhanh qua để không làm xáo trộn không gian của họ.", type: "TypeB" },
+                    { text: "Trái tim thắt lại vì đồng cảm với tận cùng nỗi đau, nhưng bề ngoài vẫn giữ vẻ mặt điềm nhiên bước qua.", type: "TypeC" },
+                    { text: "Dừng lại một nhịp, tự hỏi mình có nên đưa cho họ tờ khăn giấy không, nhưng thường ngập ngừng rồi thôi.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Nếu một ngày mọi thứ dừng lại, điều bạn tiếc nuối nhất sâu thẳm bên trong là gì?",
+                choices: [
+                    { text: "Chưa kịp thấu hiểu hết những bí ẩn sâu thẳm của nhân sinh và ý nghĩa thực sự của sự tồn tại.", type: "TypeA" },
+                    { text: "Đã sống quá an toàn, lãng phí thời gian thay vì dấn thân vào những chân trời tự do không trói buộc.", type: "TypeB" },
+                    { text: "Đã xây những bức tường rào quá cao, chưa từng một lần dám tháo lớp áo giáp để yêu trọn vẹn.", type: "TypeC" },
+                    { text: "Chưa từng thực sự thả lỏng để sống cho riêng mình, vì mãi làm điểm tựa cho những người xung quanh.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Khái niệm 'Bóng tối' đối với bạn mang lại cảm giác gì?",
+                choices: [
+                    { text: "Một môi trường hoàn hảo. Sự thiếu vắng ánh sáng giúp tâm trí trở nên sắc bén và tập trung hơn.", type: "TypeA" },
+                    { text: "Một vòng tay mềm mại, nơi mình có thể tan vào không gian và trở nên vô hình khỏi mọi kỳ vọng.", type: "TypeB" },
+                    { text: "Một người bạn tri kỷ nhưng hay gợi niềm đau, nó nuôi dưỡng nỗi buồn nhưng cũng che chở vết thương.", type: "TypeC" },
+                    { text: "Một khoảng không yên tĩnh hiếm hoi trong ngày, lúc duy nhất không phải gồng mình mạnh mẽ.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Khi xung quanh hoàn toàn tĩnh lặng tĩnh mịch, bạn cảm thấy...",
+                choices: [
+                    { text: "Rất thoải mái. Đây là lúc dòng chảy tư duy của mình hoạt động trơn tru nhất.", type: "TypeA" },
+                    { text: "Hơi chơi vơi. Mình thường phải bật một chút âm thanh (nhạc lofi, tiếng mưa) để lấp đầy khoảng không.", type: "TypeB" },
+                    { text: "Ngột ngạt. Vì khi bên ngoài im lặng, tiếng ồn của những suy nghĩ miên man bên trong lại vang lên quá rõ.", type: "TypeC" },
+                    { text: "Đó là sự bình yên vô giá, là món quà quý báu bù đắp cho cả một ngày dài đầy rẫy tạp âm.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Khi bị hiểu lầm, cách bạn đối diện thường là:",
+                choices: [
+                    { text: "Giải thích rõ ràng một lần, nếu đối phương vẫn không muốn hiểu thì mỉm cười và không bận tâm thêm.", type: "TypeA" },
+                    { text: "Cảm thấy mệt mỏi với sự phức tạp của con người, lùi lại một bước và để thời gian tự trả lời.", type: "TypeB" },
+                    { text: "Tổn thương sâu sắc nhưng tuyệt đối không hạ mình van xin sự thấu hiểu, giữ thái độ lạnh nhạt.", type: "TypeC" },
+                    { text: "Cảm thấy nặng nề trong lòng nhưng chọn cách im lặng, dùng hành động cặm cụi chứng minh dần dần.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Khi nhận được một lời khen ngợi chân thành bất ngờ:",
+                choices: [
+                    { text: "Lịch sự đón nhận nhưng trong đầu tự động phân tích xem mình có thực sự xứng đáng với điều đó không.", type: "TypeA" },
+                    { text: "Cảm thấy ngượng ngùng, hơi lúng túng vì không quen với việc trở thành trung tâm của sự chú ý.", type: "TypeB" },
+                    { text: "Mỉm cười nhạt, thâm tâm thoáng nghĩ: 'Bởi vì bạn chưa thấy những mảng tối tăm xám xịt của tôi thôi'.", type: "TypeC" },
+                    { text: "Cảm ơn nồng nhiệt nhưng tự khắc ghi một áp lực: 'Từ nay mình phải cố gắng hơn để không làm họ thất vọng'.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Khi nhìn thật lâu vào hình ảnh phản chiếu của mình trong gương, bạn thấy gì?",
+                choices: [
+                    { text: "Một cái tôi đang quan sát chính nó, một cảm giác hơi tách rời khỏi thực tại vật lý.", type: "TypeA" },
+                    { text: "Một ánh mắt chất chứa nhiều tâm sự chưa nói, đôi khi tự hỏi mình thực sự thuộc về nơi đâu.", type: "TypeB" },
+                    { text: "Một kẻ mang quá nhiều lớp mặt nạ, giấu kín cả một đại dương giông bão đằng sau sự phẳng lặng.", type: "TypeC" },
+                    { text: "Một người đáng tin cậy nhưng đôi vai đã trĩu nặng, ánh mắt già cỗi hơn nhiều so với tuổi thật.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Bạn thường xoa dịu những cơn đau tinh thần như thế nào?",
+                choices: [
+                    { text: "Nhìn nhận nó như một hiện tượng tâm lý, cố gắng tách bạch tâm trí để không bị nó nhấn chìm.", type: "TypeA" },
+                    { text: "Đánh lạc hướng bản thân bằng những chuyến đi nhỏ, những sở thích mới, hoặc thả hồn vào nghệ thuật.", type: "TypeB" },
+                    { text: "Có xu hướng gặm nhấm nó một mình, đôi khi vô thức để nỗi buồn kéo dài như một thói quen khó bỏ.", type: "TypeC" },
+                    { text: "Nghiến răng chịu đựng, tự dặn lòng ngày mai trời lại sáng, tuyệt đối không than vãn nửa lời.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Định nghĩa dịu dàng nhất của bạn về khái niệm 'Nhà'?",
+                choices: [
+                    { text: "Là một trạng thái tâm trí bình yên, nơi mình được làm chính mình mà không bị ai can thiệp.", type: "TypeA" },
+                    { text: "Là một thứ mình luôn tìm kiếm. Không phải một căn nhà vật lý, mà là cảm giác thân thuộc thực sự.", type: "TypeB" },
+                    { text: "Là vòng tay của một người duy nhất đủ kiên nhẫn chấp nhận mọi mặt tối tồi tệ của mình.", type: "TypeC" },
+                    { text: "Là nơi có những người thân yêu đang chờ đợi, nơi mình có trách nhiệm mang đến sự an tâm cho họ.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Nếu đứng trước một quang cảnh thiên nhiên rộng lớn bao la (như biển đêm, đỉnh núi):",
+                choices: [
+                    { text: "Cảm nhận sự nhỏ bé của bản ngã trước vũ trụ vô tận, mọi muộn phiền bỗng chốc trở nên vụn vặt.", type: "TypeA" },
+                    { text: "Có một sự thôi thúc kỳ lạ muốn hòa tan vào thiên nhiên, rũ bỏ hết mọi danh tính hiện tại.", type: "TypeB" },
+                    { text: "Cảm thấy không gian ngoài kia dường như đồng điệu với khoảng trống thênh thang trong lòng mình.", type: "TypeC" },
+                    { text: "Tận hưởng làn gió mát lành, nạp lại năng lượng để ngày mai tiếp tục quay về với vòng quay cuộc sống.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Mối quan hệ của bạn với những trang mạng xã hội là gì?",
+                choices: [
+                    { text: "Nơi quan sát thông tin, lưu giữ kiến thức, rất hiếm khi chia sẻ cảm xúc cá nhân lên đó.", type: "TypeA" },
+                    { text: "Có những góc khuất ẩn danh, thỉnh thoảng chia sẻ vài dòng nhạc, ảnh phong cảnh mông lung vô định.", type: "TypeB" },
+                    { text: "Tạo dựng một hình ảnh bình tĩnh, ổn định, che giấu hoàn toàn những giông bão ngầm bên trong.", type: "TypeC" },
+                    { text: "Chủ yếu dùng để liên lạc công việc và gia đình. Không tốn quá nhiều thời gian để sống ảo.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Khái niệm 'Nước mắt' trong từ điển nội tâm của bạn:",
+                choices: [
+                    { text: "Một cách để cơ thể giải tỏa căng thẳng tự nhiên, tuy nhiên mình hiếm khi cần dùng đến nó.", type: "TypeA" },
+                    { text: "Một cơn mưa rào cần thiết để gột rửa tâm hồn, nhưng mình chỉ khóc khi chỉ có một mình.", type: "TypeB" },
+                    { text: "Sự mong manh mà mình không muốn ai thấy. Rất sợ bản thân mất kiểm soát và yếu lòng trước mặt người khác.", type: "TypeC" },
+                    { text: "Một thứ đã quá đỗi xa xỉ. Đã từ rất lâu rồi mình tự nhắc nhở rằng nước mắt không giải quyết được vấn đề.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Sự tha thứ, trong thế giới nội tâm của bạn là:",
+                choices: [
+                    { text: "Sự buông bỏ hợp lý, vì giữ lại oán hận chỉ làm tiêu hao năng lượng tinh thần vô ích.", type: "TypeA" },
+                    { text: "Như một cái thở phào nhẹ nhõm, cất bước đi tiếp mà không mang theo gánh nặng quá khứ.", type: "TypeB" },
+                    { text: "Rất khó khăn. Bề ngoài có thể bình thường, nhưng vết nứt niềm tin thì vĩnh viễn còn đó.", type: "TypeC" },
+                    { text: "Có thể tha thứ để giữ hòa khí yên ấm, nhưng ký ức đó sẽ được ghim lại như một bài học cẩn trọng.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Khi ai đó khẽ chạm vào vết thương lòng mà bạn đang cố giấu:",
+                choices: [
+                    { text: "Tinh tế quan sát xem sự quan tâm đó là tò mò hay thực sự chân thành, trước khi hé lộ thêm.", type: "TypeA" },
+                    { text: "Hơi hoảng hốt nhẹ, lảng tránh bằng một nụ cười rồi tìm cớ để rời khỏi cuộc trò chuyện sâu đó.", type: "TypeB" },
+                    { text: "Phòng thủ lập tức. Cố tỏ ra gai góc hoặc lạnh nhạt để đẩy họ ra xa trước khi họ nhìn thấy sự yếu đuối.", type: "TypeC" },
+                    { text: "Mỉm cười hiền hòa, khéo léo bẻ lái sang một chủ đề khác tươi sáng hơn để không làm không khí trầm xuống.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Nỗi sợ dịu vợi nào hay lướt qua tâm trí bạn lúc rạng sáng?",
+                choices: [
+                    { text: "Sợ tâm trí một ngày nào đó trở nên trì trệ, không còn khả năng cảm thụ những tầng sâu của tri thức.", type: "TypeA" },
+                    { text: "Sợ bị mắc kẹt vĩnh viễn trong một vòng lặp nhạt nhòa, mất đi sự rung động trước cái đẹp của trần gian.", type: "TypeB" },
+                    { text: "Sợ sự lãng quên. Sợ một ngày những người mình thương yêu nhất lại xem mình như một người dưng.", type: "TypeC" },
+                    { text: "Sợ mình không còn đủ sức khỏe để chăm lo cho những người mình thương, trở thành gánh nặng của họ.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Nếu có một phép màu nhỏ để làm mờ đi một mảnh ký ức, bạn sẽ chọn:",
+                choices: [
+                    { text: "Không làm mờ gì cả. Vui buồn đau khổ đều là những mảnh ghép làm nên bản ngã toàn vẹn của mình hiện tại.", type: "TypeA" },
+                    { text: "Xóa đi khoảng thời gian chông chênh, mất phương hướng nhất để tâm hồn được thanh nhẹ trở lại.", type: "TypeB" },
+                    { text: "Nhạt nhòa đi khoảnh khắc lòng tự tôn bị tổn thương sâu sắc, khoảnh khắc mình cảm thấy không xứng đáng được yêu.", type: "TypeC" },
+                    { text: "Xóa đi những lỗi lầm mình vô tình gây ra khiến những người quan trọng với mình phải muộn phiền.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Kiểu người nào khiến bạn nhẹ nhàng chọn cách tránh xa?",
+                choices: [
+                    { text: "Người luôn để cảm xúc tiêu cực điều khiển hành vi, bảo thủ và từ chối nhìn nhận mọi thứ đa chiều.", type: "TypeA" },
+                    { text: "Người thích kiểm soát, áp đặt những lề thói cũ kỹ và xâm phạm không gian tự do cá nhân của người khác.", type: "TypeB" },
+                    { text: "Người đạo đức giả, bề ngoài ngọt ngào dịu dàng nhưng bên trong đầy toan tính lừa lọc.", type: "TypeC" },
+                    { text: "Người vô trách nhiệm, thói quen đùn đẩy khó khăn cho người khác rồi vô tư hưởng thành quả.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Ý niệm về 'Sự kết thúc' trong góc nhìn tĩnh lặng của bạn:",
+                choices: [
+                    { text: "Một quy luật tất yếu của tự nhiên. Một giấc ngủ yên bình và dài vô tận không mộng mị.", type: "TypeA" },
+                    { text: "Một chuyến du hành vĩ đại cuối cùng, nơi linh hồn được thả lỏng hoàn toàn khỏi sức nặng của thể xác.", type: "TypeB" },
+                    { text: "Sự giải thoát êm ái khỏi những ngày dài mỏi mệt che giấu, hy vọng ai đó sẽ cất giữ mình trong tim.", type: "TypeC" },
+                    { text: "Một sự nghỉ ngơi. Điểm gợn duy nhất là liệu những người ở lại có vững vàng bước tiếp khi vắng mình không.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Bí mật êm đềm nhưng sâu sắc nhất mà bạn giấu đằng sau vẻ ngoài bình thản là:",
+                choices: [
+                    { text: "Sự thật là đôi khi mình cảm thấy vạn vật thật vô nghĩa, mình chỉ đang thả trôi theo dòng chảy một cách điềm nhiên.", type: "TypeA" },
+                    { text: "Khao khát muốn bỏ lại mọi chức danh, tiền tài hiện tại để dọn đến một thị trấn nhỏ sống cuộc đời vô danh.", type: "TypeB" },
+                    { text: "Khao khát mãnh liệt được một người ôm vào lòng và nói 'Không sao đâu, có tôi ở đây rồi', dù bên ngoài mình rất kiêu ngạo.", type: "TypeC" },
+                    { text: "Mình thực sự đang rất kiệt sức. Lớp áo giáp của sự kiên cường đang nặng trĩu, nhưng mình không dám cởi bỏ.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Khi ngắm nhìn một cánh hoa đang từ từ héo rũ bên khung cửa, bạn mỉm cười nghĩ:",
+                choices: [
+                    { text: "Mọi thứ sinh ra đều có chu kỳ của nó. Vẻ đẹp nằm ở sự thay đổi không ngừng.", type: "TypeA" },
+                    { text: "Có một sự lãng mạn phảng phất trong sự tàn phai này, buồn nhưng rất đỗi dịu dàng.", type: "TypeB" },
+                    { text: "Thấy chạnh lòng nhẹ. Rực rỡ đến đâu rồi cũng có lúc phải đối diện với sự lãng quên vô tình.", type: "TypeC" },
+                    { text: "Mình nên nhặt nó đi, thay một cành hoa mới tươi tắn hơn để căn phòng giữ được sinh khí.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Cảm giác 'Thuộc về nơi này' là một khái niệm:",
+                choices: [
+                    { text: "Không quá quan trọng. Mình có thể tồn tại độc lập ở bất cứ không gian nào miễn là tâm trí tĩnh lặng.", type: "TypeA" },
+                    { text: "Là một giấc mơ xa xôi. Mình giống như một đám mây, cứ trôi mãi mà chưa tìm được bầu trời thực sự của mình.", type: "TypeB" },
+                    { text: "Là thứ mình từng suýt chạm tay tới, nhưng lại tự mình rụt lại vì lo sợ ngày mai nó tan biến mất.", type: "TypeC" },
+                    { text: "Nơi nào có người cần hơi ấm và sự che chở của mình, nơi đó tự khắc trở thành nơi mình thuộc về.", type: "TypeD" }
+                ]
+            },
+            {
+                question: "Đêm đã rất khuya, xung quanh im ắng. Điều tâm hồn bạn thực sự khao khát lúc này là gì?",
+                choices: [
+                    { text: "Một cuốn sách hay, một ly trà ấm, chìm đắm vào thế giới tri thức tĩnh lặng không vướng bận.", type: "TypeA" },
+                    { text: "Một làn gió mát rượi, nằm nhìn lên trần nhà và cảm nhận sự nhẹ nhõm vô hình bao bọc lấy cơ thể.", type: "TypeB" },
+                    { text: "Một bàn tay nắm lấy tay mình trong bóng tối, một sự thấu hiểu không cần buông lời.", type: "TypeC" },
+                    { text: "Một giấc ngủ thật sâu, thật bình yên không mộng mị, để ngày mai thức dậy với một trái tim nhẹ nhàng hơn.", type: "TypeD" }
+                ]
+            }
+        ];
+
+        // ---------------------------------------------------------
+        // 2. DATA: PROFILES (KẾT QUẢ PHÂN TÍCH NHẸ NHÀNG, SÂU SẮC)
+        // ---------------------------------------------------------
+        const resultsData = {
+            "TypeA": {
+                title: "KẺ QUAN SÁT TĨNH LẶNG",
+                subtitle: "(The Silent Observer)",
+                class: "text-blue-200",
+                desc: `
+                    <p class="mb-4 italic text-blue-300">"Lý trí là tấm khiên vững chãi, nhưng đôi khi cũng là bức tường kính giam giữ những nhịp đập thổn thức."</p>
+                    <p class="mb-4">Chào bạn, linh hồn của sự tĩnh lặng. Giữa một thế giới ồn ào và vội vã, bạn giống như một mặt hồ mùa thu, phẳng lặng, sâu thẳm và phản chiếu vạn vật. Khả năng nhìn thấu tâm can người khác và phân tích mọi thứ một cách đa chiều khiến bạn trở nên thông tuệ và sâu sắc. Khi người khác cuống cuồng trong giông bão cảm xúc, bạn chọn cách ngồi lùi lại, nhẹ nhàng gỡ rối từng nút thắt bằng tư duy logic sắc bén của mình.</p>
+                    <p class="mb-4">Thế nhưng, góc khuất sau sự bình thản ấy là gì? Đó là <b>Nỗi sợ mất kiểm soát</b>. Bạn dùng lý trí như một lớp sương mù êm ái bao bọc lấy trái tim, vì bạn e ngại rằng những cảm xúc mãnh liệt sẽ phá vỡ trật tự ngăn nắp trong thế giới nội tâm của mình. Bạn thích quan sát con người hơn là thực sự bước vào vòng xoáy của họ. Điều này đôi khi đẩy bạn vào một sự cô đơn vô hình — sự cô đơn của kẻ hiểu vạn vật nhưng chẳng mấy ai đủ sâu sắc để thấu hiểu lại mình.</p>
+                    <p class="mb-4 text-[#cbd5e1]"><b>Lặng nghe đêm thì thầm:</b> Đừng ngại để bản thân được rung động một chút, phi logic một chút. Bạn không cần phải giải mã mọi nỗi buồn, thỉnh thoảng, chỉ cần cho phép mình ngồi xuống và khóc cùng nó thôi. Thế giới ngoài kia dẫu lộn xộn, vẫn luôn có chỗ cho một trái tim mềm yếu cất tiếng hát.</p>
+                `
+            },
+            "TypeB": {
+                title: "LINH HỒN LANG THANG",
+                subtitle: "(The Wandering Soul)",
+                class: "text-purple-300",
+                desc: `
+                    <p class="mb-4 italic text-purple-400">"Đi tìm bầu trời vô tận để giấu đi khao khát được thuộc về một nơi chốn yên bình."</p>
+                    <p class="mb-4">Chào bạn, cánh chim tự do của bầu trời đêm. Bạn mang trong mình một tâm hồn đầy tính nghệ thuật, lãng mạn và yêu chuộng sự khoáng đạt. Bạn e sợ những khuôn thước, những thói quen lặp đi lặp lại bào mòn cảm xúc. Với bạn, mỗi ngày phải là một trải nghiệm, một nhịp thở mới. Năng lượng lãng đãng, mong manh của bạn có sức hút kỳ lạ, khiến người ta vừa muốn ôm lấy, vừa sợ bạn sẽ trôi tuột đi như làn khói mờ.</p>
+                    <p class="mb-4">Nhưng hỡi linh hồn mộng mơ, đằng sau đôi chân không mỏi ấy có chăng là <b>Sự lảng tránh nỗi đau</b>? Bạn bay đi mỗi khi mọi thứ trở nên quá sâu sắc hoặc quá ngột ngạt. Bằng cách không neo đậu tâm hồn mình ở bất kỳ đâu, bạn bảo vệ bản thân khỏi cảm giác bị bỏ rơi hay mất mát. Bạn nhầm lẫn giữa sự tự do tuyệt đối và việc trốn chạy những tổn thương chưa lành. Cứ trôi mãi như mây, nhưng đêm về lại thấy lòng chênh vênh trống trải lạ thường.</p>
+                    <p class="mb-4 text-[#cbd5e1]"><b>Lặng nghe đêm thì thầm:</b> Đôi khi, can đảm lớn nhất không phải là đi đến những chân trời mới, mà là dũng cảm đứng lại đối diện với trái tim mình. Hãy thử một lần thả mỏ neo, rễ cây cần thời gian bám đất để nở ra những đóa hoa rực rỡ nhất. Đã đến lúc, bạn cho phép mình được 'thuộc về'.</p>
+                `
+            },
+            "TypeC": {
+                title: "NGỌN LỬA ẨN GIẤU",
+                subtitle: "(The Hidden Flame)",
+                class: "text-rose-300",
+                desc: `
+                    <p class="mb-4 italic text-rose-400">"Quấn quanh mình những lớp gai nhọn chỉ để bảo vệ một trái tim khao khát hơi ấm đến tột cùng."</p>
+                    <p class="mb-4">Chào bạn, người mang vẻ ngoài của một tảng băng nhưng bên trong lại ủ một đốm lửa rực rỡ. Bất kỳ ai nhìn vào cũng sẽ thấy bạn mạnh mẽ, độc lập, đôi khi ngạo nghễ và vô cùng bất cần. Bạn xây dựng những bức tường rào quá xuất sắc đến mức không ai dám bước qua giới hạn. Bạn luôn chuẩn bị sẵn tâm lý cho sự chia ly, luôn chừa cho mình một đường lui để không bao giờ phải chịu cảm giác hụt hẫng.</p>
+                    <p class="mb-4">Nhưng sự thật dưới lớp vỏ kiêu hãnh đó là một <b>Trái tim chịu nhiều vết xước</b>. Bạn xù lông nhím vì bạn đã từng bị tổn thương khi trao đi niềm tin chân thành. Ký ức nhắc nhở bạn rằng hy vọng sẽ mang lại thất vọng. Vì quá sợ bị bỏ rơi, đôi khi bạn tự tay phá hỏng những mối quan hệ đang tốt đẹp, đẩy người ta ra xa chỉ để ngấm ngầm thử thách xem họ có đủ kiên nhẫn ở lại không. Bạn khao khát yêu thương mãnh liệt, nhưng lại luôn giấu đi bằng sự lạnh lùng.</p>
+                    <p class="mb-4 text-[#cbd5e1]"><b>Lặng nghe đêm thì thầm:</b> Mang vác áo giáp rất mệt mỏi phải không? Đừng sợ hãi sự mong manh. Sẽ có người đến không phải để mang thêm vết xước, mà để nhẹ nhàng gỡ từng chiếc gai trên người bạn xuống. Hãy dũng cảm hé mở cánh cửa, ánh sáng dịu dàng đang chờ bạn ngoài kia.</p>
+                `
+            },
+            "TypeD": {
+                title: "MỎ NEO CÔ ĐỘC",
+                subtitle: "(The Lonely Anchor)",
+                class: "text-indigo-200",
+                desc: `
+                    <p class="mb-4 italic text-indigo-300">"Vá víu những tổn thương của cả thế giới, nhưng quên mất trái tim mình cũng đang vụn vỡ dần."</p>
+                    <p class="mb-4">Chào bạn, chốn bình yên của rất nhiều người. Nếu cuộc đời là một cơn bão, bạn chính là ngọn hải đăng vững chãi. Bạn thực tế, đáng tin cậy, bao dung và luôn biết cách chăm sóc người khác. Mọi người tìm đến bạn khi họ gục ngã vì họ biết bạn sẽ luôn ở đó, lắng nghe và dang rộng vòng tay. Bạn sống quá trách nhiệm, gom hết những bộn bề lo toan vào mình chỉ để đổi lấy nụ cười của những người bạn thương yêu.</p>
+                    <p class="mb-4">Thế nhưng, khi đêm buông xuống, ai sẽ là ngọn hải đăng của bạn? Hội chứng <b>Độc lập cực đoan</b> và sự hy sinh thầm lặng đang vắt kiệt sức lực của bạn. Bạn cho đi vô điều kiện vì sâu thẳm bạn sợ cảm giác trở nên vô dụng, sợ làm phiền người khác. Bạn nuốt trôi nước mắt, giấu đi sự mệt mỏi, luôn nói "Tôi ổn" dẫu tâm hồn đang rệu rã. Bạn làm mỏ neo giữ tàu người khác không trôi dạt, nhưng lại để mặc con thuyền của mình chìm dần trong sự cô đơn kiệt quệ.</p>
+                    <p class="mb-4 text-[#cbd5e1]"><b>Lặng nghe đêm thì thầm:</b> Bạn thân mến, bạn không nợ thế giới này sự hoàn hảo, cũng không phải gánh vác mọi nỗi buồn. Hãy học cách dựa vào người khác, học cách nói "Tôi đang rất mệt". Xòe tay ra để nhận lại tình yêu thương đi, vì bạn hoàn toàn xứng đáng được nâng niu.</p>
+                `
+            }
+        };
+
+        // ---------------------------------------------------------
+        // 3. APPLICATION LOGIC & STATE
+        // ---------------------------------------------------------
+        const appContainer = document.getElementById('app');
+        let currentQuestionIndex = 0;
+        let scores = { TypeA: 0, TypeB: 0, TypeC: 0, TypeD: 0 };
+
+        function initApp() {
+            renderStartScreen();
+        }
+
+        function renderStartScreen() {
+            const html = `
+                <div class="glass-panel p-10 md:p-16 text-center w-full fade-enter">
+                    <!-- Biểu tượng mặt trăng lofi bằng SVG -->
+                    <div class="flex justify-center mb-8 opacity-70">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-soft)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </div>
+                    
+                    <h1 class="font-title text-4xl md:text-5xl font-bold mb-4 text-[var(--text-main)] tracking-wide">
+                        Trạm Dừng Tâm Trí
+                    </h1>
+                    
+                    <p class="text-lg text-[var(--secondary-soft)] mb-8 font-light italic">
+                        Một cuộc chuyện trò tĩnh lặng với bản ngã giữa màn đêm.
+                    </p>
+                    
+                    <div class="w-24 h-px bg-gradient-to-r from-transparent via-[var(--primary-soft)] to-transparent mx-auto mb-8 opacity-40"></div>
+                    
+                    <div class="text-[var(--text-dim)] mb-12 text-[15px] md:text-base leading-relaxed max-w-xl mx-auto font-light">
+                        <p class="mb-4">Chào bạn. Không có đúng sai, không có phán xét ở đây. Chỉ có 30 câu hỏi nhỏ như những gợn sóng lăn tăn, giúp bạn nhìn sâu vào mặt hồ nội tâm của chính mình.</p>
+                        <p>Hãy thả lỏng vai, hít một hơi thật sâu và để trực giác dẫn lối nhé.</p>
+                    </div>
+
+                    <button onclick="startQuiz()" class="start-btn text-white px-10 py-4 text-[15px] tracking-wide font-medium shadow-lg flex items-center justify-center mx-auto gap-2 group">
+                        Bắt đầu hành trình
+                        <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+                </div>
+            `;
+            updateView(html);
+        }
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            scores = { TypeA: 0, TypeB: 0, TypeC: 0, TypeD: 0 };
+            updateView(renderQuestionHTML());
+        }
+
+        function updateView(newHTML) {
+            const currentContent = appContainer.firstElementChild;
+            if (currentContent) {
+                currentContent.classList.remove('fade-enter');
+                currentContent.classList.add('fade-exit');
+                
+                setTimeout(() => {
+                    appContainer.innerHTML = newHTML;
+                }, 750); // Khớp với thời gian fade-exit
+            } else {
+                appContainer.innerHTML = newHTML;
+            }
+        }
+
+        function renderQuestionHTML() {
+            const q = quizData[currentQuestionIndex];
+            
+            const choicesHtml = q.choices.map((choice, index) => {
+                return `
+                    <button onclick="selectChoice('${choice.type}')" class="choice-btn w-full text-left p-5 md:p-6 mb-4 flex items-start group">
+                        <span class="text-[var(--text-dim)] group-hover:text-white text-[15px] md:text-[16px] font-light leading-relaxed transition-colors duration-300">
+                            ${choice.text}
+                        </span>
+                    </button>
+                `;
+            }).join('');
+
+            const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+
+            return `
+                <div class="glass-panel w-full p-8 md:p-12 fade-enter">
+                    <!-- Progress Bar Mềm Mại -->
+                    <div class="flex justify-between items-center mb-4 font-title text-sm text-[var(--secondary-soft)] opacity-80">
+                        <span>Câu hổi ${currentQuestionIndex + 1} / ${quizData.length}</span>
+                    </div>
+                    
+                    <div class="w-full h-1 bg-[rgba(255,255,255,0.05)] rounded-full mb-10 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-[var(--primary-soft)] to-[var(--secondary-soft)] rounded-full transition-all duration-700 ease-out" style="width: ${progress}%"></div>
+                    </div>
+                    
+                    <!-- Question Text -->
+                    <h2 class="font-title text-xl md:text-[22px] mb-10 text-[var(--text-main)] font-medium leading-relaxed">
+                        ${q.question}
+                    </h2>
+                    
+                    <!-- Choices -->
+                    <div class="flex flex-col">
+                        ${choicesHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectChoice(type) {
+            scores[type]++;
+            
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                updateView(renderQuestionHTML());
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            // Màn hình Loading Chill
+            updateView(`
+                <div class="glass-panel w-full p-16 text-center fade-enter flex flex-col items-center justify-center min-h-[450px]">
+                    <div class="pulse-orb mb-12"></div>
+                    <div class="font-title text-lg text-[var(--text-main)] mb-3 font-medium tracking-wide">
+                        Đang lắng nghe nhịp đập tâm hồn...
+                    </div>
+                    <div class="text-[var(--text-dim)] font-light text-[15px] opacity-70">
+                        Nhẹ nhàng gom nhặt những mảnh ghép của bạn.
+                    </div>
+                </div>
+            `);
+
+            // Tính toán kết quả
+            let maxScore = -1;
+            let finalType = "TypeA";
+            for (const type in scores) {
+                if (scores[type] > maxScore) {
+                    maxScore = scores[type];
+                    finalType = type;
+                }
+            }
+            const result = resultsData[finalType];
+
+            // Render Final Profile sau 3.5s (Tạo cảm giác chậm rãi, thiền định)
+            setTimeout(() => {
+                const resultHtml = `
+                    <div class="glass-panel w-full p-8 md:p-14 fade-enter">
+                        <div class="font-title text-[var(--secondary-soft)] text-sm mb-3 tracking-widest uppercase opacity-80">Góc nhìn sâu thẳm</div>
+                        
+                        <h2 class="font-title text-3xl md:text-4xl font-bold mb-1 ${result.class}">
+                            ${result.title}
+                        </h2>
+                        <h3 class="font-title text-lg md:text-xl font-medium mb-8 text-[var(--text-dim)] opacity-70">
+                            ${result.subtitle}
+                        </h3>
+                        
+                        <div class="w-16 h-px bg-gradient-to-r from-[var(--primary-soft)] to-transparent mb-8 opacity-50"></div>
+                        
+                        <div class="text-[#e2e8f0] text-[15px] md:text-[16.5px] leading-[1.8] text-justify mb-12 font-light drop-shadow-sm">
+                            ${result.desc}
+                        </div>
+                        
+                        <div class="flex justify-center border-t border-[rgba(255,255,255,0.05)] pt-8">
+                            <button onclick="renderStartScreen()" class="text-[var(--text-dim)] hover:text-[var(--text-main)] font-light text-[15px] transition-colors flex items-center gap-2 group">
+                                <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                                Khép lại trang sách & quay về
+                            </button>
+                        </div>
+                    </div>
+                `;
+                updateView(resultHtml);
+            }, 3500);
+        }
+
+        // Khởi động
+        window.onload = initApp;
+    </script>
+</body>
+</html>
